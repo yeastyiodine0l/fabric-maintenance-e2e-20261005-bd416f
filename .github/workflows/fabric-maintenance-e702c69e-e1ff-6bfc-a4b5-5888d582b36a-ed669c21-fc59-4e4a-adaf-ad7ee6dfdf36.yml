@@ -1,0 +1,34 @@
+# Managed by Actions Fabric maintenance; version 2
+name: Fabric maintenance ed669c21-fc59-4e4a-adaf-ad7ee6dfdf36
+run-name: Fabric maintenance ed669c21-fc59-4e4a-adaf-ad7ee6dfdf36
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - fabric-maintenance/e702c69e-e1ff-6bfc-a4b5-5888d582b36a/probe-ed669c21-fc59-4e4a-adaf-ad7ee6dfdf36
+    paths:
+      - .fabric-maintenance/e702c69e-e1ff-6bfc-a4b5-5888d582b36a/probe-ed669c21-fc59-4e4a-adaf-ad7ee6dfdf36.json
+permissions:
+  contents: read
+concurrency:
+  group: fabric-maintenance-ed669c21-fc59-4e4a-adaf-ad7ee6dfdf36
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - name: Verify runner environment
+        run: >
+          set -euo pipefail
+
+          { uname -s; git --version; node --version; df -Pk / | tail -1; test -d
+          "$RUNNER_TEMP"; printf "Maintenance environment check passed\n"; } |
+          tee "$RUNNER_TEMP/fabric-maintenance-check.txt"
+      - name: Retain maintenance environment evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: fabric-maintenance-ed669c21-fc59-4e4a-adaf-ad7ee6dfdf36
+          path: ${{ runner.temp }}/fabric-maintenance-check.txt
+          retention-days: 1
+          if-no-files-found: error
